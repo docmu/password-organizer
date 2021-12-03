@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import db from '../utils';
+import { doc, deleteDoc, setDoc } from "firebase/firestore";
 
 const useStyles = makeStyles({
     root: {
@@ -29,20 +30,22 @@ export default function PasswordCard(props){
     const [username, setUsername] = useState(props.username);
     const [password, setPassword] = useState(props.password);
 
-    const onUpdateClick = () => {
-        db.collection('passwords').doc(props.id).set({
-            "website": website,
-            "username": username,
-            "password": password,
-        },{merge:true})
+    const onUpdateClick = async() => {
+        // db.collection('passwords').doc(props.id).set({
+        //     "website": website,
+        //     "username": username,
+        //     "password": password,
+        // },{merge:true})
+        await setDoc(doc(db, "passwords", props.id), {
+            website,
+            username,
+            password,
+          }, { merge: true });
         props.onUpdateCard(props.id, website, username, password)
     }
 
-    const onDeleteClick = () => {
-        db.collection('passwords').where("id", "==", props.id).get()
-        .then(querySnapshot => {
-            querySnapshot.docs[0].ref.delete();
-        });
+    const onDeleteClick = async() => {
+        await deleteDoc(doc(db, "passwords", props.id));
         props.onRemoveDeletedCard(props.id)
     }
 

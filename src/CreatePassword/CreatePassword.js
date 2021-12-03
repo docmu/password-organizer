@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import TextField from '@material-ui/core/TextField';
@@ -8,7 +8,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import Alert from '@material-ui/lab/Alert';
 import db from '../utils';
-
+import { collection, getDocs, addDoc, doc } from "firebase/firestore"; 
+import { AuthContext } from '../Auth';
 
 const useStyles = makeStyles({
     root: {
@@ -23,6 +24,7 @@ const useStyles = makeStyles({
   });
 
 export default function CreatePassword(props) {
+    const {auth} = useContext(AuthContext);
     const classes = useStyles();
     const [btnDisabled, setBtnDisabled] = useState(true);
     const [website, setWebsite] = useState('');
@@ -35,20 +37,12 @@ export default function CreatePassword(props) {
     const [usernameExistsAlert, setUsernameExistsAlert] = useState(null);
 
     useEffect(() => {
-        if(!inputIsEmpty() && !passwordIsTooShort() && isAlphaNumeric() && !isCommonPassword() && !usernameExists()){
+        if(!inputIsEmpty() && !passwordIsTooShort() && isAlphaNumeric() && !isCommonPassword()){
             setBtnDisabled(false)
         } else {
             setBtnDisabled(true)
         }
     },[website,username,password, btnDisabled])
-
-    // useEffect(() =>{
-    //     if(!usernameExists()){
-    //         setBtnDisabled(false)
-    //     } else {
-    //         setBtnDisabled(true)
-    //     }
-    // },[username])
 
     const inputIsEmpty = () => {
         if(website === '' || username === '' || password === '') {
@@ -102,14 +96,19 @@ export default function CreatePassword(props) {
         })
     }
 
-    const onSaveClick = () => {
+    const onSaveClick = async() => {
         try {
             // Add a new document in collection "passwords"
-            db.collection("passwords").add({
+              await addDoc(collection(db, "passwords"), {
                 website,
                 username,
                 password,
-            })
+              });
+            // db.collection("passwords").add({
+            //     website,
+            //     username,
+            //     password,
+            // })
           } catch (e) {
             console.error("Error adding document: ", e);
           }
@@ -118,7 +117,7 @@ export default function CreatePassword(props) {
     return(
         <div>
             {
-                props.authenticated && (
+                auth && (
                     <Grid className={classes.root} container spacing={2}>
                         <Grid item xs={12}>
                             {emptyInputAlert}

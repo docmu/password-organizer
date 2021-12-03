@@ -1,45 +1,42 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import { Link } from "react-router-dom";
 import Button from '@material-ui/core/Button';
 import PasswordCard from '../PasswordCard/PasswordCard';
 import Container from '@material-ui/core/Container';
 import db from '../utils';
+import { AuthContext } from '../Auth';
+import { collection, getDocs, updateDoc, doc, setDoc } from "firebase/firestore"; 
 
-export default function MyPasswords(props) {
-    const [authenticated, setAuthenticated] = useState(false);
+export default function MyPasswords() {
     const [passwords, setPasswords] = useState([]);
+    const {auth, onLogout} = useContext(AuthContext);
 
     useEffect(() => {
+        console.log('auth context')
+        console.log(auth)
         fetchPasswords();  
-        // if(window.localStorage.getItem('authenticated') === true){
-        //     console.log('myPasswords')
-        //     setAuthenticated(true);
-        // }
     },[])
 
     const onLogoutClick = () => {
-        // window.localStorage.setItem('authenticated', false)
-        // setAuthenticated(window.localStorage.getItem('authenticated'))
-        // console.log('signed out')
-        props.onLogoutClick();
+        onLogout();
     }
 
     const fetchPasswords= async () => {
-        const response = db.collection('passwords');
-        const data = await response.get();
         let arr = [...passwords];
-        data.docs.forEach(item => {
-            //add id as a field
-            db.collection('passwords').doc(item.id).set({
-                "id": item.id,
-            },{merge:true})
-            // console.log(item.data().id)
-            if(item.data().id !== 'masterKey'){
-                arr = [...arr, item.data()]
-            }          
-        })
-        console.log(arr)
-        setPasswords(arr);
+        const q = collection(db, "passwords");
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async(d) => {
+            console.log(d.id, " => ", d.data());
+            const docRef = doc(db, "passwords", d.id);
+            setDoc(docRef, {id: d.id}, {merge: true})
+            // const docSnap = await getDoc(docRef);
+            // console.log(docSnap.data())
+            // await updateDoc(ref, {id: d.id});
+            if(d.data().id !== 'masterKey'){
+                arr = [...arr, d.data()]
+            }
+          });
+          setPasswords(arr);
     }
 
     const onRemoveDeletedCard = (id) => {
@@ -62,7 +59,7 @@ export default function MyPasswords(props) {
     return(
         <Container maxWidth="md">
             {
-                props.authenticated && (
+                auth && (
                     <div>
                         <h1>MyPasswords</h1>
                         <Link to='/createPassword'>
