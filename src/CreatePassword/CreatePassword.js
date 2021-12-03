@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     },
   });
 
-export default function CreatePassword(props) {
+export default function CreatePassword() {
     const {auth} = useContext(AuthContext);
     const classes = useStyles();
     const [btnDisabled, setBtnDisabled] = useState(true);
@@ -99,16 +99,11 @@ export default function CreatePassword(props) {
     const onSaveClick = async() => {
         try {
             // Add a new document in collection "passwords"
-              await addDoc(collection(db, "passwords"), {
+            await addDoc(collection(db, "passwords"), {
                 website,
                 username,
                 password,
-              });
-            // db.collection("passwords").add({
-            //     website,
-            //     username,
-            //     password,
-            // })
+            });
           } catch (e) {
             console.error("Error adding document: ", e);
           }

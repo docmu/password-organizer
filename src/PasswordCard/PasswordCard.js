@@ -31,11 +31,6 @@ export default function PasswordCard(props){
     const [password, setPassword] = useState(props.password);
 
     const onUpdateClick = async() => {
-        // db.collection('passwords').doc(props.id).set({
-        //     "website": website,
-        //     "username": username,
-        //     "password": password,
-        // },{merge:true})
         await setDoc(doc(db, "passwords", props.id), {
             website,
             username,

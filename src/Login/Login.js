@@ -9,37 +9,24 @@ import history from '../history';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { AuthContext } from '../Auth';
 
-export default function Login(props) {
-    const [authenticated, setAuthenticated] = useState(false);
+export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const {auth, onLogin} = useContext(AuthContext);
-
-    // useEffect(() => {
-    //     if(window.localStorage.getItem('authenticated') === true){
-    //         console.log('Login')
-    //         setAuthenticated(true);
-    //     }
-    // },[])
+    const [linkToMyPasswords,setLinkToMyPasswords] = useState("Login");
 
     const onLoginClick = async() => {
-        // db.collection('passwords').doc('masterKey').get().then((doc) => {
-        //     if (username === doc.get('username') && password === doc.get('password')) {
-        //         props.onLoginClick();
-        //     } else {
-        //         console.log('wrong credentials')
-        //     }
-        // })
         const q = query(collection(db, "passwords"), where("id", "==", "masterKey"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             console.log(doc.id, " => ", doc.data());
-            onLogin();
-                // if (username === doc.get('username') && password === doc.get('password')) {
-                    // props.onLoginClick();
-                // } else {
-                //     console.log('wrong credentials')
-                // }
+            if(doc.data().username === username && doc.data().password === password){
+                console.log('correct credentials')
+                setLinkToMyPasswords(<Link to='/myPasswords'>Login</Link>)
+                onLogin();
+            } else {
+                console.log('wrong credentials')
+            }
           });
     }
 
@@ -53,9 +40,7 @@ export default function Login(props) {
                     <TextField label="password" id="input-password" variant="outlined" value={password} onChange={(e) => setPassword(e.target.value)} />
                     <br />
                     <Button variant="contained" color="primary" onClick={onLoginClick}>
-                        {
-                            auth ? <Link to='/myPasswords'>Login</Link> : "Login"
-                        }
+                        {linkToMyPasswords}
                     </Button>
                 </Grid>
             </Grid>

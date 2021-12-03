@@ -5,15 +5,14 @@ import PasswordCard from '../PasswordCard/PasswordCard';
 import Container from '@material-ui/core/Container';
 import db from '../utils';
 import { AuthContext } from '../Auth';
-import { collection, getDocs, updateDoc, doc, setDoc } from "firebase/firestore"; 
+import { collection, getDocs, doc, setDoc } from "firebase/firestore"; 
 
 export default function MyPasswords() {
     const [passwords, setPasswords] = useState([]);
     const {auth, onLogout} = useContext(AuthContext);
 
     useEffect(() => {
-        console.log('auth context')
-        console.log(auth)
+        console.log('auth context', auth)
         fetchPasswords();  
     },[])
 
@@ -26,12 +25,10 @@ export default function MyPasswords() {
         const q = collection(db, "passwords");
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach(async(d) => {
-            console.log(d.id, " => ", d.data());
+            // console.log(d.id, " => ", d.data());
             const docRef = doc(db, "passwords", d.id);
             setDoc(docRef, {id: d.id}, {merge: true})
             // const docSnap = await getDoc(docRef);
-            // console.log(docSnap.data())
-            // await updateDoc(ref, {id: d.id});
             if(d.data().id !== 'masterKey'){
                 arr = [...arr, d.data()]
             }

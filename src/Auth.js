@@ -5,27 +5,33 @@ export const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(false);
-  const [pending, setPending] = useState(true);
 
   useEffect(() => {
+      if(window.localStorage.getItem('authenticated') !== null){
+        const val = (window.localStorage.getItem('authenticated') === 'true')
+        setAuth(val)
+        console.log(typeof(val), val)
+      }
     console.log('Auth initial state ', auth)
+  }, []);
+
+  useEffect(() => {
+    console.log('Auth updated ', auth)
   }, []);
 
   const onLogin = () => {
     window.localStorage.setItem('authenticated', true);
-    setAuth(window.localStorage.getItem('authenticated'))
-    console.log('Auth state ', auth)
+    const val = (window.localStorage.getItem('authenticated') === 'true')
+    setAuth(val)
+    console.log('logged in ', auth)
   }
 
   const onLogout = () => {
     window.localStorage.setItem('authenticated', false);
-    setAuth(window.localStorage.getItem('authenticated'))
-    console.log('Auth state ', auth)
+    const val = (window.localStorage.getItem('authenticated') === 'true')
+    setAuth(val)
+    console.log('logged out ', auth)
   }
-
-//   if(pending){
-//     return <>Loading...</>
-//   }
 
   return (
     <AuthContext.Provider
