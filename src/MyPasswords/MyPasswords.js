@@ -25,10 +25,8 @@ export default function MyPasswords() {
         const q = collection(db, "passwords");
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach(async(d) => {
-            // console.log(d.id, " => ", d.data());
             const docRef = doc(db, "passwords", d.id);
             setDoc(docRef, {id: d.id}, {merge: true})
-            // const docSnap = await getDoc(docRef);
             if(d.data().id !== 'masterKey'){
                 arr = [...arr, d.data()]
             }

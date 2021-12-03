@@ -8,7 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import Alert from '@material-ui/lab/Alert';
 import db from '../utils';
-import { collection, getDocs, addDoc, doc } from "firebase/firestore"; 
+import { collection, query, where, getDocs, addDoc, doc } from "firebase/firestore"; 
 import { AuthContext } from '../Auth';
 
 const useStyles = makeStyles({
@@ -85,15 +85,19 @@ export default function CreatePassword() {
     }
 
     //there's an issue here
-    const usernameExists = () => {
-        db.collection('passwords').where('username', '==', username).get().then(querySnapshot => {
-            if(!querySnapshot.empty) {
+    const usernameExists = async() => {
+        const q = query(collection(db, "passwords"), where("username", "==", username));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            if(doc.data().username === username){
+                console.log(doc.data().username, username)
                 setUsernameExistsAlert(<Alert severity="error">This username already exists</Alert>)
                 return true;
+            } else {
+                setUsernameExistsAlert(null);
+                return false;
             }
-            setUsernameExistsAlert(null);
-            return false;
-        })
+          });
     }
 
     const onSaveClick = async() => {
