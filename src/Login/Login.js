@@ -15,14 +15,18 @@ export default function Login() {
     const {auth, onLogin} = useContext(AuthContext);
     const [linkToMyPasswords,setLinkToMyPasswords] = useState("Login");
 
+    //on login clicked
     const onLoginClick = async() => {
         const q = query(collection(db, "passwords"), where("id", "==", "masterKey"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             console.log(doc.id, " => ", doc.data());
+            //if username and password entered matches the admin credentials then log in
             if(doc.data().username === username && doc.data().password === password){
                 console.log('correct credentials')
+                //link to /myPasswords
                 setLinkToMyPasswords(<Link to='/myPasswords'>Login</Link>)
+                //set state to authenticated
                 onLogin();
             } else {
                 console.log('wrong credentials')

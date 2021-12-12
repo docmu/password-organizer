@@ -30,6 +30,7 @@ export default function PasswordCard(props){
     const [username, setUsername] = useState(props.username);
     const [password, setPassword] = useState(props.password);
 
+    //on update button clicked: update object from database by id
     const onUpdateClick = async() => {
         await setDoc(doc(db, "passwords", props.id), {
             website,
@@ -39,6 +40,7 @@ export default function PasswordCard(props){
         props.onUpdateCard(props.id, website, username, password)
     }
 
+    //on delete button clicked: delete object from database by id
     const onDeleteClick = async() => {
         await deleteDoc(doc(db, "passwords", props.id));
         props.onRemoveDeletedCard(props.id)

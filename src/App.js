@@ -8,6 +8,8 @@ import CreatePassword from './CreatePassword/CreatePassword';
 import { AuthProvider } from "./Auth";
 import db from './utils';
 
+//wrap auth provider around the root component to pass authenticated state to all children
+//App provides all the routes
 function App() {
   return (
     <AuthProvider>

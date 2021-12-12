@@ -3,6 +3,7 @@ import db from "./utils";
 
 export const AuthContext = React.createContext();
 
+//authenticated state to be passed down to all child components
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(false);
 
@@ -10,7 +11,6 @@ export const AuthProvider = ({ children }) => {
       if(window.localStorage.getItem('authenticated') !== null){
         const val = (window.localStorage.getItem('authenticated') === 'true')
         setAuth(val)
-        console.log(typeof(val), val)
       }
     console.log('Auth initial state ', auth)
   }, []);
@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
     console.log('Auth updated ', auth)
   }, []);
 
+  //change state to authenticated
   const onLogin = () => {
     window.localStorage.setItem('authenticated', true);
     const val = (window.localStorage.getItem('authenticated') === 'true')
@@ -26,6 +27,7 @@ export const AuthProvider = ({ children }) => {
     console.log('logged in ', auth)
   }
 
+  //change state to unauthenticated
   const onLogout = () => {
     window.localStorage.setItem('authenticated', false);
     const val = (window.localStorage.getItem('authenticated') === 'true')

@@ -20,6 +20,7 @@ export default function MyPasswords() {
         onLogout();
     }
 
+    //fetch all of the usernames and passwords from the database
     const fetchPasswords= async () => {
         let arr = [...passwords];
         const q = collection(db, "passwords");
@@ -34,6 +35,7 @@ export default function MyPasswords() {
           setPasswords(arr);
     }
 
+    //on delete button clicked: remove card from state
     const onRemoveDeletedCard = (id) => {
         const updatedArray = passwords.filter(obj => obj.id !== id);
         setPasswords(updatedArray)
@@ -41,6 +43,7 @@ export default function MyPasswords() {
         console.log(updatedArray)
     }
 
+    //on update button clicked: update card in state
     const onUpdateCard = (id, site, user, pass) => {
         passwords.map(obj => {
             if(obj.id === id){

@@ -36,16 +36,21 @@ export default function CreatePassword() {
     const [commonPasswordAlert, setCommonPasswordAlert] = useState(null);
     const [usernameExistsAlert, setUsernameExistsAlert] = useState(null);
 
+    //check that all conditions are valid for the new username and password
     useEffect(() => {
         if(!inputIsEmpty() && !passwordIsTooShort() && isAlphaNumeric() && !isCommonPassword()){
+            //new username and password is valid so enable the save button
             setBtnDisabled(false)
         } else {
+            //new username and password is invalid so disable the save button
             setBtnDisabled(true)
         }
     },[website,username,password, btnDisabled])
 
+    //check if any inputs are empty
     const inputIsEmpty = () => {
         if(website === '' || username === '' || password === '') {
+            //notify client that inputs cannot be empty
             setEmptyInputAlert(<Alert severity="error">Inputs cannot be empty</Alert>)
             return true;
         }
@@ -53,8 +58,10 @@ export default function CreatePassword() {
         return false;
     }
 
+    //check if password entered is too short
     const passwordIsTooShort = () => {
         if(password.length < 8) {
+            //notify client that password must be >= 8 characters
             setShortPasswordAlert(<Alert severity="error">Password must be at least 8 characters</Alert>)
             return true;
         }
@@ -62,6 +69,7 @@ export default function CreatePassword() {
         return false;
     }
 
+    //check if password is alphabumeric
     const isAlphaNumeric = () => {
         const regAlpha = /[a-zA-Z]/g;
         const regNum = /\d/g;
@@ -69,14 +77,17 @@ export default function CreatePassword() {
             setAlphaNumericAlert(null)
             return true;
         }
+        //notify client that password must be alphanumeric
         setAlphaNumericAlert(<Alert severity="error">Password must include numbers and letters</Alert>)
         return false;
     }
 
+    //check if password is a common password
     const isCommonPassword = () => {
         if(password === 'qwerty123' || password === 'aa12345678' || password === 'password1' ||
         password === 'password123' || password === '1q2w3e4r5t' || password === '1q2w3e4r' || 
         password === '1qaz2wsx' || password === '1234qwer' || password === 'myspace1' || password === '123456789a'){
+            //notify client that password cannot be a common password
             setCommonPasswordAlert(<Alert severity="error">Cannot be a common password</Alert>)
             return true;
         }
@@ -84,13 +95,14 @@ export default function CreatePassword() {
         return false;
     }
 
-    //there's an issue here
+    //check if username already exists
     const usernameExists = async() => {
         const q = query(collection(db, "passwords"), where("username", "==", username));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             if(doc.data().username === username){
                 console.log(doc.data().username, username)
+                //notify client that username entered already exists
                 setUsernameExistsAlert(<Alert severity="error">This username already exists</Alert>)
                 return true;
             } else {
@@ -100,6 +112,7 @@ export default function CreatePassword() {
           });
     }
 
+    //on save button clicked: save new object to database
     const onSaveClick = async() => {
         try {
             // Add a new document in collection "passwords"
